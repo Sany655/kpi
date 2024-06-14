@@ -1,4 +1,3 @@
 # kpi app
-which is a multivendor app
-routes setup with react
+routes setup with react router dom
 backend django

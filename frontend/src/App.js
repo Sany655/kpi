@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
 } from "react-router-dom";
 
 // Components
@@ -12,6 +11,8 @@ import HRDashboard from './pages/HRDashboard';
 import TeamLeadDashboard from './pages/TeamLeadDashboard';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import RegistrationForm from './pages/RegistrationForm';
+import axios from 'axios';
+import Header from './components/Header';
 
 // Roles
 const ROLES = {
@@ -21,45 +22,37 @@ const ROLES = {
 };
 
 function App() {
-  const [role, setRole] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  axios.defaults.baseURL = "http://localhost:8000/api/"
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   useEffect(() => {
-    // Check if user is already logged in
-    const storedRole = localStorage.getItem('role');
-    if (storedRole) {
-      setRole(storedRole);
-      setIsLoggedIn(true);
+    const auth = JSON.parse(localStorage.getItem('auth'));
+    if (auth) {
+      setIsLoggedIn(auth);
     }
-  }, []);
-
-  const handleLogin = (username, password, role) => {
-    // Handle login logic here
-    // For demo purposes, assume login is successful
-    setRole(role);
-    setIsLoggedIn(true);
-    localStorage.setItem('role', role);
-  };
+  }, [isLoggedIn?.status]);
 
   const handleLogout = () => {
-    setRole(null);
-    setIsLoggedIn(false);
-    localStorage.removeItem('role');
+    setIsLoggedIn(null);
+    localStorage.removeItem('auth');
   };
 
   return (
     <Router>
-      <Routes>
-        <Route exact path="/" element={isLoggedIn ? role === ROLES.EMPLOYEE && (
-          <EmployeeDashboard onLogout={handleLogout} />
-        ) || role === ROLES.TEAM_LEAD && (
-          <TeamLeadDashboard onLogout={handleLogout} />
-        ) || role === ROLES.HR && (
-          <HRDashboard onLogout={handleLogout} />
-        ) : <LoginForm handleLogin={handleLogin} />
-        } />
-        <Route path='registration' element={<RegistrationForm />}/>
-      </Routes>
+      <Header handleLogout={handleLogout} isLoggedIn={isLoggedIn} />
+      <div className='container'>
+        <Routes>
+          <Route exact path="/" element={isLoggedIn?.status ? isLoggedIn.role === ROLES.EMPLOYEE && (
+            <EmployeeDashboard onLogout={handleLogout} />
+          ) || isLoggedIn.role === ROLES.TEAM_LEAD && (
+            <TeamLeadDashboard onLogout={handleLogout} />
+          ) || isLoggedIn.role === ROLES.HR && (
+            <HRDashboard onLogout={handleLogout} />
+          ) : <LoginForm setIsLoggedIn={setIsLoggedIn} />
+          } />
+          <Route path='registration' element={<RegistrationForm />} />
+        </Routes>
+      </div>
     </Router>
   );
 }

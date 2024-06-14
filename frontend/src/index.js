@@ -3,11 +3,6 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Route, Router, RouterProvider, Routes, createBrowserRouter, createRoutesFromElements, redirect } from 'react-router-dom';
-import EmployeeDashboard from './pages/EmployeeDashboard';
-import TeamLeadDashboard from './pages/TeamLeadDashboard';
-import LoginForm from './pages/LoginForm';
-import HRDashboard from './pages/HRDashboard';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

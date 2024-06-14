@@ -1,68 +1,64 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, redirect } from 'react-router-dom';
 
-const LoginForm = () => {
+const LoginForm = ({ setIsLoggedIn }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('')
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    axios.post('/',{
-      username,password
-    }).then(res => console.log(res))
-    .catch(err => console.log(err))
+    if (!username || !password) {
+      setError('All inputs are required')
+    }
+    else {
+      axios.post('users/login/', {
+        username, password
+      }).then(res => {
+        if (res.data.status) {
+          setError(null)
+          localStorage.setItem('auth', JSON.stringify(res.data))
+          setIsLoggedIn(res.data)
+        } else {
+          setError(res.data.message)
+        }
+      })
+        .catch(err => setError(err.message))
+    }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white rounded-lg shadow-md p-8 w-96">
-        <h2 className="text-2xl font-bold mb-4">Sign In</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+    <div className="row justify-content-center align-items-center" style={{ height: '80vh' }}>
+      <div className="col-md-6 col-lg-4">
+        <div className="card">
+          <div className="card-body">
+            <form onSubmit={handleSubmit}>
+              <h2 className="text-center">Sign In</h2>
+              <div className="mb-3">
+                <label htmlFor="username" className="form-label">Username</label>
+                <input type="text" className="form-control" id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
+                <input type="password" className="form-control" id="exampleInputPassword1" value={password} onChange={(e) => setPassword(e.target.value)} />
+              </div>
+              <button type="submit" className="btn btn-primary">Submit</button>
+            </form>
+            <div className="mt-1 text-center">
+              <small className='text-danger'>{error}</small>
+            </div>
+            <hr />
+            <div className="mt-4 text-center">
+              <p>
+                Don't have an account?{' '}
+                <Link to="registration" className="text-blue-500 hover:text-blue-800">
+                  Signup
+                </Link>
+              </p>
+            </div>
           </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus-shadow-outline"
-            >
-              Sign In
-            </button>
-            <a href="#" className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
-              Forgot Password?
-            </a>
-          </div>
-          <div className="mt-4 text-center">
-            <p className="text-gray-500">
-              Don't have an account?{' '}
-              <Link to="registration" className="text-blue-500 hover:text-blue-800">
-                Signup
-              </Link>
-            </p>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );
