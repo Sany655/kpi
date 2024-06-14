@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 const RegistrationForm = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [error, seterror] = useState('')
-  const [success, setSuccess] = useState('')
+  const [response, setResponse] = useState({status:'',message:''})
   const roles = [
     'hr',
     'team_lead',
@@ -18,13 +17,22 @@ const RegistrationForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!username || !email || !password || !role) {
-      seterror("All inputs are required!")
+      setResponse({status:'error',message:"All inputs are required!"})
     } else {
-      seterror(null)
       axios.post('users/register/', {
         username, password, email, role
-      }).then(res => seterror(null) & setSuccess(res.data?.status) & setUsername('') & setEmail('') & setPassword('') & setRole(''))
-        .catch(err => seterror(err.message))
+      }).then(res => {
+        if (res.data.status) {
+          setResponse({status:'success',message:res.data.role+" account created successfully"})
+          setUsername('')
+          setEmail('')
+          setPassword('')
+          setRole('')
+        } else {
+          setResponse({status:'error',message:res.data.message})
+        }
+      })
+        .catch(err => setResponse({status:'success',message:err.message}))
     }
   };
 
@@ -59,7 +67,7 @@ const RegistrationForm = () => {
               <button type="submit" className="btn btn-primary">Submit</button>
             </form>
             <div className="mt-1 text-center">
-              <small className={success?'text-success':'text-danger'}>{success ? "User created successfully" : error}</small>
+              <small className={response.status=='success'?'text-success':'text-danger'}>{response.message && response.message}</small>
             </div>
             <hr />
             <div className="mt-4 text-center">
