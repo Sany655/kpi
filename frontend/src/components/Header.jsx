@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 function Header({ handleLogout, isLoggedIn }) {
     return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <nav className="navbar bg-dark border-bottom border-body navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
             <div className="container">
                 <a className="navbar-brand" href="#">KPI</a>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
